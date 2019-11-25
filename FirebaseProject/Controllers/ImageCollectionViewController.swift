@@ -9,13 +9,14 @@
 import UIKit
 import FirebaseAuth
 
-class ImageCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class ImageCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
     
     
     lazy var imageCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        
+        layout.sectionInset.right = 10
+        layout.sectionInset.left = 10
         let collection = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collection.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
         collection.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "imageCell")
@@ -39,25 +40,33 @@ class ImageCollectionViewController: UIViewController, UICollectionViewDataSourc
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+         return 10;
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 185, height: 150)
+    }
+    
     @objc func logoffButton(){
         do {
             try Auth.auth().signOut()
-            dismiss(animated: true, completion: nil)
+            let loginVC = LoginViewController()
+            loginVC.modalPresentationStyle = .fullScreen
+            present(loginVC, animated: true, completion: nil)
         } catch {print(error)}
     }
     
-    @objc func addItems(){
-        let uploadVC = UINavigationController(rootViewController: ImageUploadViewController())
-        uploadVC.modalPresentationStyle = .fullScreen
-        present(uploadVC, animated: true, completion: nil)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.5807225108, green: 0.066734083, blue: 0, alpha: 1)
         view.addSubview(imageCollection)
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoffButton))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(addItems))
         collectionConstraint()
         
         // Do any additional setup after loading the view.

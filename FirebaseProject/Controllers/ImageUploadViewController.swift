@@ -7,21 +7,31 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class ImageUploadViewController: UIViewController {
 
-    //MARK: Variables 
+    //MARK: Variables
+    
+    var image = UIImage() {
+        didSet {
+            
+        }
+    }
+    
     lazy var picture: UIImageView = {
         let image = UIImageView()
-        
+        image.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         
         return image
     }()
     
-    lazy var addButton: UIButton = {
+    lazy var uploadButton: UIButton = {
         let button = UIButton()
-        
-        
+        button.backgroundColor = #colorLiteral(red: 0.1764705926, green: 0.4980392158, blue: 0.7568627596, alpha: 1)
+        button.setTitle("Upload", for: .normal)
+        button.setTitleColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1), for: .normal)
+        button.addTarget(self, action: #selector(uploadImage), for:.touchUpInside )
         return button
     }()
     
@@ -34,15 +44,61 @@ class ImageUploadViewController: UIViewController {
         
     }
     
+    @objc func logoffButton(){
+        do {
+            try Auth.auth().signOut()
+            let loginVC = LoginViewController()
+            loginVC.modalPresentationStyle = .fullScreen
+            present(loginVC, animated: true, completion: nil)
+        } catch {print(error)}
+    }
+    
+    @objc func uploadImage(){
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.5807225108, green: 0.066734083, blue: 0, alpha: 1)
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(back))
-
-        // Do any additional setup after loading the view.
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoffButton))
+        setUpConstraints()
     }
     
     //MARK: constrains
 
+    private func setUpConstraints(){
+        
+        picture.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(picture)
+        NSLayoutConstraint.activate([
+            picture.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            picture.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            picture.widthAnchor.constraint(equalToConstant: 250),
+            picture.heightAnchor.constraint(equalToConstant: 250)
+            
+        ])
+        
+        uploadButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(uploadButton)
+        NSLayoutConstraint.activate([
+            uploadButton.topAnchor.constraint(equalTo: picture.bottomAnchor, constant: 50),
+            uploadButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            uploadButton.widthAnchor.constraint(equalToConstant: 200)
+        ])
+        
+    }
+    
+}
 
+
+
+extension ImageUploadViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else {
+            return
+        }
+        self.image = image
+        dismiss(animated: true, completion: nil)
+    }
 }

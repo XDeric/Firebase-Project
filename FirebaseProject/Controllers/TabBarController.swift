@@ -17,7 +17,7 @@ class TabBar: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         imageVC.tabBarItem = UITabBarItem(tabBarSystemItem: .featured, tag: 0)
-        uploadVC.tabBarItem = UITabBarItem(tabBarSystemItem: .more, tag: 1)
+        uploadVC.tabBarItem = UITabBarItem(title: "Add", image: .actions, tag: 1)
         self.viewControllers = [imageVC, uploadVC]
     }
     

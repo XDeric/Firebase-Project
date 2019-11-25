@@ -12,7 +12,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
     
     lazy var imageView: UIImageView = {
         let image = UIImageView()
-        image.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        image.backgroundColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
         self.addSubview(image)
         return image
     }()
@@ -37,9 +37,9 @@ class ImageCollectionViewCell: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            imageView.topAnchor.constraint(equalTo: self.topAnchor),
-            imageView.widthAnchor.constraint(equalTo: self.widthAnchor, constant: 100),
-            imageView.heightAnchor.constraint(equalTo: self.heightAnchor, constant: 100),
+            imageView.topAnchor.constraint(equalTo: topAnchor),
+            imageView.widthAnchor.constraint(equalTo: widthAnchor),
+            imageView.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
     

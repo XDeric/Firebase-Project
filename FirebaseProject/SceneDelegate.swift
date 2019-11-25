@@ -19,20 +19,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        //let tabBarVC = UITabBarController()
-        let LoginVC = LoginViewController()
-        
-//        let imageCollectionVC = ImageCollectionViewController()
-//        let uploadImageVC = ImageUploadViewController()
-//
-//        tabBarVC.viewControllers = [imageCollectionVC, uploadImageVC]
-//
-//        imageCollectionVC.tabBarItem = UITabBarItem(title: "Best Sellers", image: UIImage(named: "best"), tag: 0)
-//        uploadImageVC.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(named:"favorite"), tag: 1)
-        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.windowScene = windowScene
-        window?.rootViewController = LoginVC
+        let LoginVC = LoginViewController()
+        let mainTab = TabBar()
+        
+        if FirebaseAuthService.manager.currentUser != nil {
+            window?.rootViewController = mainTab
+        } else {
+             window?.rootViewController = LoginViewController()
+        }
         window?.makeKeyAndVisible()
     }
     
