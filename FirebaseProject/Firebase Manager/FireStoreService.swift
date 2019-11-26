@@ -38,6 +38,32 @@ class FirestoreService {
         }
     }
     
+//    func getAllPosts(sortingCriteria: SortingCriteria? = nil, completion: @escaping (Result<[Post], Error>) -> ()) {
+//        let completionHandler: FIRQuerySnapshotBlock = {(snapshot, error) in
+//            if let error = error {
+//                completion(.failure(error))
+//            } else {
+//                let posts = snapshot?.documents.compactMap({ (snapshot) -> Post? in
+//                    let postID = snapshot.documentID
+//                    let post = Post(from: snapshot.data(), id: postID)
+//                    return post
+//                })
+//                completion(.success(posts ?? []))
+//            }
+//        }
+//        
+//        //type: Collection Reference
+//        let collection = db.collection(FireStoreCollections.posts.rawValue)
+//        //If i want to sort, or even to filter my collection, it's going to work with an instance of a different type - FIRQuery
+//        //collection + sort/filter settings.getDocuments
+//        if let sortingCriteria = sortingCriteria {
+//            let query = collection.order(by:sortingCriteria.rawValue, descending: sortingCriteria.shouldSortDescending)
+//            query.getDocuments(completion: completionHandler)
+//        } else {
+//            collection.getDocuments(completion: completionHandler)
+//        }
+//    }
+    
     
     func getPosts(completion: @escaping (Result<[Post], Error>)-> Void) {
         database.collection("posts").getDocuments { (snaphot, error) in

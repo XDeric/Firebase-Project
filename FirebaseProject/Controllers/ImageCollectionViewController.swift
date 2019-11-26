@@ -11,6 +11,11 @@ import FirebaseAuth
 
 class ImageCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
     
+    var posts = [Post]() {
+        didSet {
+            self.imageCollection.reloadData()
+        }
+    }
     
     lazy var imageCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -29,7 +34,7 @@ class ImageCollectionViewController: UIViewController, UICollectionViewDataSourc
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return posts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -45,7 +50,7 @@ class ImageCollectionViewController: UIViewController, UICollectionViewDataSourc
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-         return 10;
+        return 10;
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -62,14 +67,32 @@ class ImageCollectionViewController: UIViewController, UICollectionViewDataSourc
     }
     
     
+    
+    //MARK: views loading up
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        loadData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.5807225108, green: 0.066734083, blue: 0, alpha: 1)
         view.addSubview(imageCollection)
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoffButton))
         collectionConstraint()
-        
         // Do any additional setup after loading the view.
+    }
+    
+    private func loadData(){
+        FirestoreService.manager.getPosts { (result) in
+            switch result {
+            case .success(let postsFromFirebase):
+                self.posts = postsFromFirebase
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
     
     private func collectionConstraint(){

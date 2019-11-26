@@ -15,9 +15,9 @@ class ImageUploadViewController: UIViewController {
 
     //MARK: Variables
     
-    var image = UIImage() {
+    var images = UIImage() {
         didSet {
-            picture.image = image
+            picture.image = images
         }
     }
     
@@ -54,6 +54,13 @@ class ImageUploadViewController: UIViewController {
     
     
     //MARK: Functions/Methods
+    
+    func showAlert(title: String, message: String){
+        let alert = UIAlertController.init(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
     @objc func back(){
         let mainTabVC = TabBar()
         mainTabVC.modalPresentationStyle = .fullScreen
@@ -71,7 +78,42 @@ class ImageUploadViewController: UIViewController {
     }
     
     @objc func uploadImage(){
+        guard let image = picture.image, let data = image.jpegData(compressionQuality: 1.0) else {
+            showAlert(title: "Error", message: "Image was not chosen")
+            return
+        }
+        let imageName = UUID().uuidString
+        let imageReference = Storage.storage().reference().child(MyKeys.imagesFolder).child(imageName)
         
+        imageReference.putData(data, metadata: nil) { (metadata, error) in
+            if let error = error {
+                self.showAlert(title: "Error", message: "\(error)")
+                return
+            }
+            imageReference.downloadURL { (url, error) in
+                if let error = error {
+                    self.showAlert(title: "Error", message: "\(error)")
+                    return
+                }
+                guard let url = url else {
+                    self.showAlert(title: "Error", message: "Url went amiss")
+                    return
+                }
+                let urlString = url.absoluteString
+                let dataReference = Firestore.firestore().collection(MyKeys.imagesCollection).document()
+                let documentUID = dataReference.documentID
+                let data = [ MyKeys.uid: documentUID, MyKeys.imageUrl: urlString]
+                
+                dataReference.setData(data) { (error) in
+                    if let error = error {
+                        self.showAlert(title: "Error", message: "\(error)")
+                        return
+                    }
+                    UserDefaults.standard.set(documentUID, forKey: MyKeys.uid)
+                    self.showAlert(title: "Success", message: "uploaded image to firebase storage")
+                }
+            }
+        }
     }
     
     @objc func pickImage(){
@@ -122,13 +164,12 @@ class ImageUploadViewController: UIViewController {
 }
 
 
-
 extension ImageUploadViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else {
             return
         }
-        self.image = image
+        self.images = image
         dismiss(animated: true, completion: nil)
     }
 }
