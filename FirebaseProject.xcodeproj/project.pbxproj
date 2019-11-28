@@ -29,6 +29,7 @@
 		852D633623888B2800923DC4 /* Round.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852D633523888B2800923DC4 /* Round.swift */; };
 		856F97B6238B7182001AA655 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856F97B5238B7181001AA655 /* TabBarController.swift */; };
 		856F97B8238D8129001AA655 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856F97B7238D8129001AA655 /* Keys.swift */; };
+		856F97F0238DA58D001AA655 /* FireBaseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856F97EF238DA58D001AA655 /* FireBaseStorage.swift */; };
 		E53DBB8E8D0868ACB54B5332 /* Pods_FirebaseProjectTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F777AC4BB5E4A562231D647 /* Pods_FirebaseProjectTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 		852D633523888B2800923DC4 /* Round.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Round.swift; sourceTree = "<group>"; };
 		856F97B5238B7181001AA655 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		856F97B7238D8129001AA655 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
+		856F97EF238DA58D001AA655 /* FireBaseStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseStorage.swift; sourceTree = "<group>"; };
 		9E5B69C7AE86B46178704541 /* Pods-FirebaseProjectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirebaseProjectTests.release.xcconfig"; path = "Target Support Files/Pods-FirebaseProjectTests/Pods-FirebaseProjectTests.release.xcconfig"; sourceTree = "<group>"; };
 		B332EF536F2890DDBA67D2B7 /* Pods_FirebaseProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FirebaseProject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0B67CB933EA3B12E136AE03 /* Pods-FirebaseProjectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirebaseProjectTests.debug.xcconfig"; path = "Target Support Files/Pods-FirebaseProjectTests/Pods-FirebaseProjectTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 			children = (
 				852D63172383544C00923DC4 /* FireBaseAuth.swift */,
 				852D63192383545800923DC4 /* FireStoreService.swift */,
+				856F97EF238DA58D001AA655 /* FireBaseStorage.swift */,
 			);
 			path = "Firebase Manager";
 			sourceTree = "<group>";
@@ -381,6 +384,7 @@
 				852D63202384991C00923DC4 /* Post.swift in Sources */,
 				852D63182383544C00923DC4 /* FireBaseAuth.swift in Sources */,
 				852D633623888B2800923DC4 /* Round.swift in Sources */,
+				856F97F0238DA58D001AA655 /* FireBaseStorage.swift in Sources */,
 				852D62F32383067300923DC4 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

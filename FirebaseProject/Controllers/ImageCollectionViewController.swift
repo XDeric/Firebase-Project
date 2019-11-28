@@ -85,7 +85,9 @@ class ImageCollectionViewController: UIViewController, UICollectionViewDataSourc
     }
     
     private func loadData(){
-        FirestoreService.manager.getPosts { (result) in
+        
+        
+        FirestoreService.manager.getPosts(forUserID: FirebaseAuthService.manager.currentUser!.uid) { (result) in
             switch result {
             case .success(let postsFromFirebase):
                 self.posts = postsFromFirebase

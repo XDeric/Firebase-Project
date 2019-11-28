@@ -9,27 +9,73 @@
 import Foundation
 import FirebaseFirestore
 
+fileprivate enum FireStoreCollections: String {
+    case users
+    case posts
+    case comments
+}
+
+enum SortingCriteria: String {
+    case fromNewestToOldest = "dateCreated"
+    var shouldSortDescending: Bool {
+        switch self {
+        case .fromNewestToOldest:
+            return true
+        }
+    }
+}
+
 class FirestoreService {
     private init () {}
     
     static let manager = FirestoreService()
-    private let database = Firestore.firestore()
+    private let db = Firestore.firestore()
     
     
-    func createAppUser(user: AppUser, completion: @escaping (Result<Void, Error>) -> Void) {
-        database.collection("users").document(user.uid).setData(user.fieldsDict) { (error) in
+    func createAppUser(user: AppUser, completion: @escaping (Result<(), Error>) -> ()) {
+        var fields = user.fieldsDict
+        fields["dateCreated"] = Date()
+        db.collection(FireStoreCollections.users.rawValue).document(user.uid).setData(fields) { (error) in
             if let error = error {
                 completion(.failure(error))
                 print(error)
             }
             completion(.success(()))
         }
+    }
+    
+    func updateCurrentUser(userName: String? = nil, photoURL: URL? = nil, completion: @escaping (Result<(), Error>) -> ()){
+        guard let userId = FirebaseAuthService.manager.currentUser?.uid else {
+            //MARK: TODO - handle can't get current user
+            return
+        }
+        var updateFields = [String:Any]()
         
+        if let user = userName {
+            updateFields["userName"] = user
+        }
+        
+        if let photo = photoURL {
+            updateFields["photoURL"] = photo.absoluteString
+        }
+        
+       
+        //PUT request
+        db.collection(FireStoreCollections.users.rawValue).document(userId).updateData(updateFields) { (error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+            
+        }
     }
     
  
-    func createPost(post: Post, completion: @escaping (Result<Void,Error>)-> Void){
-        database.collection("posts").document(post.id.uuidString).setData(post.fieldsDict) { (error) in
+    func createPost(post: Post, completion: @escaping (Result<(), Error>) -> ()) {
+        var fields = post.fieldsDict
+        fields["dateCreated"] = Date()
+        db.collection(FireStoreCollections.posts.rawValue).addDocument(data: fields) { (error) in
             if let error = error {
                 completion(.failure(error))
             } else {
@@ -38,47 +84,47 @@ class FirestoreService {
         }
     }
     
-//    func getAllPosts(sortingCriteria: SortingCriteria? = nil, completion: @escaping (Result<[Post], Error>) -> ()) {
-//        let completionHandler: FIRQuerySnapshotBlock = {(snapshot, error) in
-//            if let error = error {
-//                completion(.failure(error))
-//            } else {
-//                let posts = snapshot?.documents.compactMap({ (snapshot) -> Post? in
-//                    let postID = snapshot.documentID
-//                    let post = Post(from: snapshot.data(), id: postID)
-//                    return post
-//                })
-//                completion(.success(posts ?? []))
-//            }
-//        }
-//        
-//        //type: Collection Reference
-//        let collection = db.collection(FireStoreCollections.posts.rawValue)
-//        //If i want to sort, or even to filter my collection, it's going to work with an instance of a different type - FIRQuery
-//        //collection + sort/filter settings.getDocuments
-//        if let sortingCriteria = sortingCriteria {
-//            let query = collection.order(by:sortingCriteria.rawValue, descending: sortingCriteria.shouldSortDescending)
-//            query.getDocuments(completion: completionHandler)
-//        } else {
-//            collection.getDocuments(completion: completionHandler)
-//        }
-//    }
-    
-    
-    func getPosts(completion: @escaping (Result<[Post], Error>)-> Void) {
-        database.collection("posts").getDocuments { (snaphot, error) in
+    func getAllPosts(sortingCriteria: SortingCriteria? = nil, completion: @escaping (Result<[Post], Error>) -> ()) {
+        let completionHandler: FIRQuerySnapshotBlock = {(snapshot, error) in
             if let error = error {
                 completion(.failure(error))
             } else {
-                let posts = snaphot?.documents.compactMap({ (snapshot) -> Post? in
+                let posts = snapshot?.documents.compactMap({ (snapshot) -> Post? in
                     let postID = snapshot.documentID
-                    guard let postUID = UUID(uuidString: postID) else {return nil}
-                    return Post(from: snapshot.data(), id: postUID)
+                    let post = Post(from: snapshot.data(), id: postID)
+                    return post
                 })
-                
                 completion(.success(posts ?? []))
             }
         }
+        
+        //type: Collection Reference
+        let collection = db.collection(FireStoreCollections.posts.rawValue)
+        //If i want to sort, or even to filter my collection, it's going to work with an instance of a different type - FIRQuery
+        //collection + sort/filter settings.getDocuments
+        if let sortingCriteria = sortingCriteria {
+            let query = collection.order(by:sortingCriteria.rawValue, descending: sortingCriteria.shouldSortDescending)
+            query.getDocuments(completion: completionHandler)
+        } else {
+            collection.getDocuments(completion: completionHandler)
+        }
+    }
+    
+    
+    func getPosts(forUserID: String, completion: @escaping (Result<[Post], Error>) -> ()) {
+        db.collection(FireStoreCollections.posts.rawValue).whereField("creatorID", isEqualTo: forUserID).getDocuments { (snapshot, error) in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                let posts = snapshot?.documents.compactMap({ (snapshot) -> Post? in
+                    let postID = snapshot.documentID
+                    let post = Post(from: snapshot.data(), id: postID)
+                    return post
+                })
+                completion(.success(posts ?? []))
+            }
+        }
+        
     }
     
     
